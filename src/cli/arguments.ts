@@ -7,6 +7,8 @@ export interface CliOptions {
     port: number;
     tunnel: boolean;
     help: boolean;
+    docs?: "blog" | "faq";
+    yes: boolean;
 }
 
 export class CliArgumentError extends Error {
@@ -51,6 +53,8 @@ const resolveSharedDir = (input = ".") => {
 export const parseArguments = (argv = process.argv.slice(2), env: NodeJS.ProcessEnv = process.env): CliOptions => {
     let tunnel = false;
     let help = false;
+    let yes = false;
+    let docs: "blog" | "faq" | undefined;
     let port = readPort(env.PORT ?? String(defaultPort));
     let directory: string | undefined;
 
@@ -70,6 +74,21 @@ export const parseArguments = (argv = process.argv.slice(2), env: NodeJS.Process
 
         if (arg === "--help" || arg === "-h") {
             help = true;
+            continue;
+        }
+
+        if (arg === "--blog") {
+            docs = "blog";
+            continue;
+        }
+
+        if (arg === "--faq") {
+            docs = "faq";
+            continue;
+        }
+
+        if (arg === "--yes" || arg === "-y") {
+            yes = true;
             continue;
         }
 
@@ -101,10 +120,12 @@ export const parseArguments = (argv = process.argv.slice(2), env: NodeJS.Process
     }
 
     return {
-        sharedDir: help ? resolve(expandHome(directory ?? ".")) : resolveSharedDir(directory),
+        sharedDir: help || docs ? resolve(expandHome(directory ?? ".")) : resolveSharedDir(directory),
         port,
         tunnel,
         help,
+        docs,
+        yes,
     };
 };
 
@@ -113,6 +134,9 @@ export const usage = `Usage: kamiocal [directory] [options]
 Directory defaults to the current working directory. Use "." explicitly for the current directory.
 
 Options:
-  --tunnel, --cloudflare, --cf   Start a Cloudflare quick tunnel with cloudflared
+  --tunnel, --cloudflare, --cf   Start a Cloudflare quick tunnel (offers to install cloudflared if missing)
+  -y, --yes                      Install cloudflared without asking
   -p, --port <port>              Port to listen on (default: ${defaultPort}, or PORT env)
+  --blog                         Open the Kamiocal guide in your browser
+  --faq                          Open the FAQ in your browser
   -h, --help                     Show this help message`;

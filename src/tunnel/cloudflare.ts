@@ -2,6 +2,7 @@ import { spawn } from "child_process";
 
 export interface CloudflareTunnelOptions {
     port: number;
+    command?: string;
     onUrl: (url: string) => void;
     onError: (message: string) => void;
 }
@@ -12,9 +13,14 @@ export interface CloudflareTunnelProcess {
 
 const tunnelUrlPattern = /https:\/\/[-a-z0-9]+\.trycloudflare\.com/iu;
 
-export const startCloudflareTunnel = ({ port, onUrl, onError }: CloudflareTunnelOptions): CloudflareTunnelProcess => {
+export const startCloudflareTunnel = ({
+    port,
+    command = "cloudflared",
+    onUrl,
+    onError,
+}: CloudflareTunnelOptions): CloudflareTunnelProcess => {
     const tunnelProcess = spawn(
-        "cloudflared",
+        command,
         ["tunnel", "--no-autoupdate", "--url", `http://127.0.0.1:${port}`],
         { stdio: ["ignore", "pipe", "pipe"] },
     );

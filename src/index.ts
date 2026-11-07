@@ -1,12 +1,14 @@
 #!/usr/bin/env node
 import { serve } from "@hono/node-server";
 import { createApp } from "./server/app";
-import { CliArgumentError, parseArguments, usage } from "./cli/arguments";
+import { CliArgumentError, parseArguments, usage, type CliOptions } from "./cli/arguments";
+import { links, openLink } from "./cli/links";
 import { bigText, printTunnelUrl, screen } from "./cli/output";
 import { startCloudflareTunnel, type CloudflareTunnelProcess } from "./tunnel/cloudflare";
+import { ensureCloudflared } from "./tunnel/install";
 
-const main = () => {
-    let options;
+const main = async () => {
+    let options: CliOptions;
 
     try {
         options = parseArguments();
@@ -25,6 +27,27 @@ const main = () => {
         return;
     }
 
+    if (options.docs) {
+        const url = links[options.docs];
+
+        console.log(` ${url}`);
+        await openLink(url);
+        return;
+    }
+
+    let tunnelCommand: string | undefined;
+
+    if (options.tunnel) {
+        const found = await ensureCloudflared({ yes: options.yes });
+
+        if (found) {
+            tunnelCommand = found;
+        } else {
+            console.log(" Continuing without a tunnel.\n");
+            options.tunnel = false;
+        }
+    }
+
     const app = createApp({ sharedDir: options.sharedDir });
     let tunnelProcess: CloudflareTunnelProcess | undefined;
 
@@ -38,6 +61,7 @@ const main = () => {
         console.log("\n Starting Cloudflare quick tunnel...");
         tunnelProcess = startCloudflareTunnel({
             port: options.port,
+            command: tunnelCommand,
             onUrl: printTunnelUrl,
             onError: (message) => console.error(` ${message}`),
         });
@@ -52,4 +76,7 @@ const main = () => {
     });
 };
 
-main();
+main().catch((error) => {
+    console.error(error);
+    process.exit(1);
+});

@@ -19,15 +19,12 @@ const getNetworkAddress = () => {
 };
 
 export const bigText = (inputText: string) => {
-    figlet(inputText, (err, data) => {
-        if (err) {
-            console.log("Something went wrong...");
-            console.dir(err);
-            return;
-        }
-
-        console.log(data);
-    });
+    try {
+        console.log(figlet.textSync(inputText));
+    } catch (err) {
+        console.log("Something went wrong...");
+        console.dir(err);
+    }
 };
 
 export const printQrCode = (url: string) => {
