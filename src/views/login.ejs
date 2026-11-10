@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="robots" content="noindex, nofollow" />
+
+    <title>Kamiocal - Protected</title>
+    <link
+      rel="shortcut icon"
+      href="https://cdn.discordapp.com/emojis/1009412343303770173.png"
+      type="image/png"
+    />
+    <link href="/styles/style.css?version=<%= Date.now() %>" rel="stylesheet" />
+  </head>
+
+  <body class="login-page">
+    <main class="login-card">
+      <form action="/login" method="POST">
+        <input
+          type="text"
+          name="username"
+          autocomplete="username"
+          value=""
+          hidden
+        />
+
+        <label class="login-label" for="password"> Password </label>
+
+        <input
+          class="login-input"
+          id="password"
+          name="password"
+          type="password"
+          placeholder="Enter your password"
+          autocomplete="current-password"
+          required
+          autofocus
+        />
+
+        <% if (locals.error) { %>
+        <p class="login-error" id="login-error" role="alert">
+          Incorrect password. Please try again.
+        </p>
+        <% } %>
+
+        <button class="login-button btn-flex" type="submit">
+          <img src="/icons/unlock.svg" alt="Unlock icon" class="size-4" />
+          Unlock Folder
+        </button>
+      </form>
+
+      <span class="login-footer btn-flex"
+        >Powered by
+        <img src="/icons/logo.png" alt="Unlock icon" class="size-icon"
+      /></span>
+    </main>
+  </body>
+</html>

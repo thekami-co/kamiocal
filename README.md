@@ -43,6 +43,7 @@ Options:
 
 ```bash
 --tunnel, --cloudflare, --cf   Start a Cloudflare quick tunnel with cloudflared
+--password                     Set Password to the share file
 -p, --port <port>              Port to listen on (default: 7879, or PORT env)
 -h, --help                     Show help
 ```
@@ -123,4 +124,4 @@ If you have any feedback, feel free to reach out to [KamiRu](https://discord.com
 ## Authors
 
 - [Ruhan](https://github.com/Ruhannn)
-- [fateniel](https://github.com/fateniel)
+- [Kaito](https://github.com/nekokaito)

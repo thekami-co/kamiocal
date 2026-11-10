@@ -1,9 +1,25 @@
 import { defineConfig } from "tsup";
+import { cpSync, mkdirSync } from "node:fs";
+import { join } from "node:path";
 
 export default defineConfig({
-    entry: ["src/index.ts"],
-    outDir: "dist",
-    clean: true,
-    format: ["cjs"],
-    onSuccess: "rm -rf dist/views dist/public && cp -r src/views dist/views && mkdir -p dist/public && cp -r public/. dist/public",
+  entry: ["src/index.ts"],
+  outDir: "dist",
+  clean: true,
+  format: ["cjs", "esm"],
+  dts: true,
+
+  async onSuccess() {
+    mkdirSync("dist", { recursive: true });
+
+    cpSync("src/views", join("dist", "views"), {
+      recursive: true,
+      force: true,
+    });
+
+    cpSync("public", join("dist", "public"), {
+      recursive: true,
+      force: true,
+    });
+  },
 });
